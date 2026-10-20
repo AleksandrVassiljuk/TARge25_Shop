@@ -1,7 +1,10 @@
+
 using Microsoft.EntityFrameworkCore;
 using TARge25_Shop.ApplicationServices.Services;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
+using TARge25Shop.ApplicationServices.Services;
+using TARge25Shop.Core.ServiceInterface;
 
 namespace TARge25_Shop
 {
@@ -13,6 +16,7 @@ namespace TARge25_Shop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
             builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
 
             builder.Services.AddScoped<IFileServices, FileServices>();
@@ -21,10 +25,14 @@ namespace TARge25_Shop
 
             builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
 
-            //On vaja alla laadida Microsoft.EEntityFrameworkCore.SqlServer NuGet pakett,
-            //et kasutada UseSqlServer meetodit
+            // Cocktail API
+            builder.Services.AddHttpClient<ICocktailServices, CocktailServices>();
+
+            // On vaja alla laadida Microsoft.EntityFrameworkCore.SqlServer
+            // NuGet pakett, et kasutada UseSqlServer meetodit
             builder.Services.AddDbContext<TARge25_ShopContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -32,16 +40,19 @@ namespace TARge25_Shop
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+
+                // The default HSTS value is 30 days.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
+
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

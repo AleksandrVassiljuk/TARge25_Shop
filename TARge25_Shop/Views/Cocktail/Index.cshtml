@@ -1,0 +1,96 @@
+﻿@model TARge25_Shop.Models.Cocktail.CocktailIndexViewModel
+
+@{
+    ViewData["Title"] = "Cocktail API";
+}
+
+<h1>Cocktail API</h1>
+
+<p>Search cocktails from TheCocktailDB API.</p>
+
+<form asp-controller="Cocktail" asp-action="Index" method="get">
+    <div class="input-group mb-4">
+        <input type="text"
+               name="searchName"
+               value="@Model.SearchName"
+               class="form-control"
+               placeholder="Enter cocktail name" />
+
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+    </div>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
+else if (Model.Cocktails == null || !Model.Cocktails.Any())
+{
+    <div class="alert alert-warning">
+        No cocktails found.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var cocktail in Model.Cocktails)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+
+                    <img src="@cocktail.StrDrinkThumb"
+                         class="card-img-top"
+                         alt="@cocktail.StrDrink"
+                         style="height:250px; object-fit:cover;" />
+
+                    <div class="card-body">
+
+                        <h4 class="card-title">
+                            @cocktail.StrDrink
+                        </h4>
+
+                        <p>
+                            <strong>Category:</strong>
+                            @cocktail.StrCategory
+                        </p>
+
+                        <h5>Ingredients:</h5>
+
+                        <ul>
+                            @if (!string.IsNullOrEmpty(cocktail.StrIngredient1))
+                            {
+                                <li>@cocktail.StrIngredient1</li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(cocktail.StrIngredient2))
+                            {
+                                <li>@cocktail.StrIngredient2</li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(cocktail.StrIngredient3))
+                            {
+                                <li>@cocktail.StrIngredient3</li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(cocktail.StrIngredient4))
+                            {
+                                <li>@cocktail.StrIngredient4</li>
+                            }
+                        </ul>
+
+                        <h5>Instructions:</h5>
+
+                        <p class="card-text">
+                            @cocktail.StrInstructions
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

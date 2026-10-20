@@ -1,0 +1,99 @@
+﻿@using System.Text.Json
+
+@{
+    ViewData["Title"] = "OpenWeather";
+    string city = ViewBag.City ?? "Tallinn";
+    string? weatherJson = ViewBag.Weather as string;
+}
+
+<div class="container mt-5">
+
+    <h1 class="text-center mb-4">OpenWeather API</h1>
+
+    <form asp-controller="OpenWeather" asp-action="Index" method="get"
+          class="mb-4">
+
+        <div class="input-group">
+            <input type="text"
+                   name="city"
+                   value="@city"
+                   class="form-control"
+                   placeholder="Sisesta linna nimi"
+                   required />
+
+            <button type="submit" class="btn btn-primary">
+                Otsi ilma
+            </button>
+        </div>
+    </form>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(weatherJson))
+    {
+        using var document = JsonDocument.Parse(weatherJson);
+        var root = document.RootElement;
+
+        string cityName = root.GetProperty("name").GetString() ?? city;
+        double temperature = root.GetProperty("main").GetProperty("temp").GetDouble();
+        double feelsLike = root.GetProperty("main").GetProperty("feels_like").GetDouble();
+        int humidity = root.GetProperty("main").GetProperty("humidity").GetInt32();
+        int pressure = root.GetProperty("main").GetProperty("pressure").GetInt32();
+        double windSpeed = root.GetProperty("wind").GetProperty("speed").GetDouble();
+
+        var weather = root.GetProperty("weather")[0];
+        string description = weather.GetProperty("description").GetString() ?? "";
+        string icon = weather.GetProperty("icon").GetString() ?? "01d";
+
+        <div class="card shadow-lg text-center">
+            <div class="card-body p-4">
+
+                <h2>@cityName</h2>
+
+                <img src="https://openweathermap.org/img/wn/@(icon)@@2x.png"
+                     alt="@description"
+                     width="100" />
+
+                <h1 class="display-3">
+                    @temperature.ToString("0.#") °C
+                </h1>
+
+                <h4 class="text-capitalize">
+                    @description
+                </h4>
+
+                <hr />
+
+                <div class="row mt-4">
+
+                    <div class="col-md-6 mb-3">
+                        <h5>Tajutav temperatuur</h5>
+                        <p>@feelsLike.ToString("0.#") °C</p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h5>Õhuniiskus</h5>
+                        <p>@humidity %</p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h5>Tuule kiirus</h5>
+                        <p>@windSpeed.ToString("0.#") m/s</p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h5>Õhurõhk</h5>
+                        <p>@pressure hPa</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

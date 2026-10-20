@@ -28,6 +28,9 @@ namespace TARge25_Shop
             // Cocktail API
             builder.Services.AddHttpClient<ICocktailServices, CocktailServices>();
 
+            // OpenWeather API
+            builder.Services.AddHttpClient<OpenWeatherService>();
+
             // On vaja alla laadida Microsoft.EntityFrameworkCore.SqlServer
             // NuGet pakett, et kasutada UseSqlServer meetodit
             builder.Services.AddDbContext<TARge25_ShopContext>(options =>

@@ -1,6 +1,8 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TARge25_Shop.ApplicationServices.Services;
+using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using TARge25Shop.ApplicationServices.Services;
@@ -14,15 +16,19 @@ namespace TARge25_Shop
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // MVC
             builder.Services.AddControllersWithViews();
 
+            // Spaceship
             builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
 
+            // File
             builder.Services.AddScoped<IFileServices, FileServices>();
 
+            // RealEstate
             builder.Services.AddScoped<IRealEstateServices, RealEstateServices>();
 
+            // Kindergarten
             builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
 
             // Cocktail API
@@ -31,20 +37,41 @@ namespace TARge25_Shop
             // OpenWeather API
             builder.Services.AddHttpClient<OpenWeatherService>();
 
-            // On vaja alla laadida Microsoft.EntityFrameworkCore.SqlServer
-            // NuGet pakett, et kasutada UseSqlServer meetodit
+            // Email
+            builder.Services.AddScoped<IEmailServices, EmailServices>();
+
+            // SQL Server
             builder.Services.AddDbContext<TARge25_ShopContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // ASP.NET Core Identity
+            builder.Services
+                .AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddEntityFrameworkStores<TARge25_ShopContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/Login";
+            });
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Error handling
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-
-                // The default HSTS value is 30 days.
                 app.UseHsts();
             }
 
@@ -52,6 +79,8 @@ namespace TARge25_Shop
 
             app.UseRouting();
 
+            // Identity authentication
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

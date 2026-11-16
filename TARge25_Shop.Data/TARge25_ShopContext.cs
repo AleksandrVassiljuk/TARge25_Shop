@@ -1,28 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TARge25_Shop.Core.Domain;
-
 
 namespace TARge25_Shop.Data
 {
-    // Nimetasime classi TARge25_ShopContext, mis pärib DBContext klassi
-    public class TARge25_ShopContext : DbContext
+    public class TARge25_ShopContext : IdentityDbContext<ApplicationUser>
     {
-        // Tegime konteksti, mis pärib DBContext klassi
-        public TARge25_ShopContext(DbContextOptions<TARge25_ShopContext> options)
-            : base(options) { } // consturctor
+        public TARge25_ShopContext(
+            DbContextOptions<TARge25_ShopContext> options)
+            : base(options)
+        {
+        }
 
-
-        // vaja lisada dbSet, mis on seotud meie domain klassiga Spaceship
+        // Spaceship
         public DbSet<Spaceship> Spaceships { get; set; }
 
+        // Files API
         public DbSet<FileToApi> FileToApis { get; set; }
 
+        // RealEstate
         public DbSet<RealEstate> RealEstates { get; set; }
 
+        // Files Database
         public DbSet<FileToDatabase> FileToDatabases { get; set; }
 
-        // Kindergarten dbSet
+        // Kindergarten
         public DbSet<Kindergarten> Kindergartens { get; set; }
-
     }
 }

@@ -49,17 +49,31 @@ namespace TARge25_Shop
             builder.Services
                 .AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
+                    // Password settings
                     options.Password.RequireDigit = true;
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = true;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequiredLength = 6;
 
+                    // User settings
                     options.User.RequireUniqueEmail = true;
+
+                    // Email confirmation
+                    options.SignIn.RequireConfirmedEmail = true;
+
+                    // Account lockout after 3 failed login attempts
+                    options.Lockout.DefaultLockoutTimeSpan =
+                        TimeSpan.FromMinutes(15);
+
+                    options.Lockout.MaxFailedAccessAttempts = 3;
+
+                    options.Lockout.AllowedForNewUsers = true;
                 })
                 .AddEntityFrameworkStores<TARge25_ShopContext>()
                 .AddDefaultTokenProviders();
 
+            // Cookie settings
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/Login";

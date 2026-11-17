@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Email Confirmation";
+}
+
+<div class="container mt-5 text-center">
+
+    <h2>Email Confirmation</h2>
+
+    @if (TempData["EmailError"] != null)
+    {
+        <div class="alert alert-danger">
+            <h4>Email Error</h4>
+            <p>@TempData["EmailError"]</p>
+        </div>
+
+        <p>
+            Kinnituskirja saatmine ebaõnnestus.
+            Palun kontrolli e-posti seadistusi.
+        </p>
+    }
+    else if (TempData["EmailSuccess"] != null)
+    {
+        <div class="alert alert-success">
+            <h4>Email Sent</h4>
+            <p>@TempData["EmailSuccess"]</p>
+        </div>
+
+        <p>
+            Palun kontrolli oma Gmaili postkasti
+            ja Spam kausta.
+        </p>
+
+        <p>
+            Vajuta e-kirjas Confirm Email,
+            et oma konto kinnitada.
+        </p>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Registreerimise tulemus on teadmata.
+            Palun proovi uuesti.
+        </div>
+    }
+
+    <a asp-controller="Account"
+           asp-action="Login"
+           class="btn btn-primary mt-3">
+        Login
+    </a>
+
+</div>
